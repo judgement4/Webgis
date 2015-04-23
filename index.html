@@ -1,1 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <style>
+        #map_canvas {
+            width:100%;
+            height:600px;
+        }
+        .jumbotron {
+            margin-bottom: 10px;
+        }
+        .page-header{
+            margin-top: 10px;
+        }
+        #webName{
+            font-size: 30px;
+            color: #1E9E69;
+        }
+        .navbar{
+            padding-top: 15px;
+            padding-bottom: 10px;
+        }
+        #pointName{
+            margin-top: 0px;
+        }
+        #header2{
+            margin-top: 30px;;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=D78f228016d8c538e0eee2c3d735529d"></script>
+    <!--引入框架css和js-->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <title>Webgis</title>
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" id="webName">Webgis for weather and PM2.5</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="http://www.weather.com.cn">中国天气网 <span class="sr-only">(current)</span></a></li>
+                <li><a href="http://www.pm25.in">PM25.in</a></li>
+            </ul>
+            <form class="navbar-form navbar-right" role="search">
+                <div class="form-group">
+                    <input type="text" name="city" class="form-control" placeholder="Search"  id="Cw">
+                </div>
+                <button type="submit" class="btn btn-default" onclick="searchC()">搜索城市</button>
+            </form>
+            <ul class="nav navbar-nav navbar-left">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">小组成员 <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">201422</a></li>
+                        <li><a href="#">201344</a></li>
+                        <li><a href="#">2014342</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container">
+
+        <div class="row">
+            <div class="col-md-8">
+                <h3>本页面提供基于地图的天气情况和PM值查询.</h3>
+            </div>
+            <div class="col-md-4">
+                <h3><small>>>数据来源：百度地图/中华万年历/PM25.in</small></h3>
+            </div>
+        </div>
+
+</div>
+<br>
+<div class="jumbotron" id="jb">
+    <div class="container">
+    <div class="container-fluid">
+        <h2 id="pointName">City's Name.<small>small&nbsp(实时空气指数AQI)</small></h2>
+        <div class="row" id="header2">
+            <div class="col-md-4">
+                <h2 id="pm" align="center">PM2.5</h2>
+                <hr width="70%">
+            </div>
+            <div class="col-md-4">
+                <h2 id="qu" align="center">污染情况</h2>
+                <hr width="70%">
+            </div>
+            <div class="col-md-4">
+                <h2 id="pp" align="center">首要污染物</h2>
+                <hr width="70%">
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="container-fluid" role="main">
+    <div class="row">
+        <div class="col-md-3">
+            <hr/>
+
+            <div class="well">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <td style="background-color: #8ABB74; color: azure;" align="center"><h2>天气情况</h2></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td align="center">
+                            <h4>
+                            <script>
+                                var mytime = new Date();
+                                var myday = mytime.getDate();
+                                var mymouth  = mytime.getMonth();
+                                var myyear = mytime.getFullYear();
+                                document.write(myyear+"年"+mymouth+"月"+myday+"日");
+                            </script>
+                            </h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="updateTime">
+                            <h4>
+                            更新时间：
+                            </h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="cityType">
+                            <h4>
+                            天气:
+                            </h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="highTemp"><h4>最高温度：</h4></td>
+                    </tr>
+                    <tr>
+                        <td id="lowTemp"><h4>最低温度：</h4></td>
+                    </tr>
+                    <tr>
+                        <td id="detail"><h4>温馨提示：</h4></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <hr/>
+            <div id="map_canvas"></div>
+        </div>
+    </div>
+    <hr/>
+    <footer>
+        <p align="right">Copyright FF</p>
+    </footer>
+</div>
+    <script src="map.js" language="JavaScript" ></script>
+</body>
+</html>
