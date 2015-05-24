@@ -58,12 +58,13 @@
                 <li><a href="http://www.weather.com.cn">中国天气网 <span class="sr-only">(current)</span></a></li>
                 <li><a href="http://www.pm25.in">PM25.in</a></li>
             </ul>
-            <form class="navbar-form navbar-right" role="search">
-                <div class="form-group">
-                    <input type="text" name="city" class="form-control" placeholder="Search"  id="Cw">
-                </div>
-                <button type="submit" class="btn btn-default" onclick="searchC()">搜索城市</button>
-            </form>
+            <div>
+                <form class="navbar-form navbar-right" target="id_iframe">
+                    <input type="text"  class="form-control" placeholder="Search"  id="Cw">
+                    <button class="btn btn-default" onclick="searchC()">搜索城市</button>
+                </form>
+                <iframe id="id_iframe" name="id_iframe" style="display:none;"></iframe>
+            </div>
             <ul class="nav navbar-nav navbar-left">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">小组成员 <span class="caret"></span></a>
@@ -78,7 +79,6 @@
     </div><!-- /.container-fluid -->
 </nav>
 <div class="container">
-
         <div class="row">
             <div class="col-md-8">
                 <h3>本页面提供基于地图的天气情况和PM值查询.</h3>
@@ -87,25 +87,27 @@
                 <h3><small>>>数据来源：百度地图/中华万年历/PM25.in</small></h3>
             </div>
         </div>
-
 </div>
 <br>
 <div class="jumbotron" id="jb">
     <div class="container">
     <div class="container-fluid">
-        <h2 id="pointName">City's Name.<small>small&nbsp(实时空气指数AQI)</small></h2>
+        <h2 id="pointName">City's Name.<small>地区&nbsp(实时空气指数AQI)</small></h2>
         <div class="row" id="header2">
             <div class="col-md-4">
                 <h2 id="pm" align="center">PM2.5</h2>
                 <hr width="70%">
+                <h5 align="center">PM2.5值</h5>
             </div>
             <div class="col-md-4">
                 <h2 id="qu" align="center">污染情况</h2>
                 <hr width="70%">
+                <h5 align="center">污染情况</h5>
             </div>
             <div class="col-md-4">
                 <h2 id="pp" align="center">首要污染物</h2>
                 <hr width="70%">
+                <h5 align="center">首要污染物</h5>
             </div>
         </div>
     </div>

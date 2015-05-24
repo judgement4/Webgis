@@ -11,19 +11,38 @@ var pmPoint = new Array(30);
 var aqi;
 var qualityBglevel;
 var Bgcolor;
+var searchCity;
+var actulName;
+var newName;
 // 百度地图API功能
 var map = new BMap.Map("map_canvas");    // 创建Map实例
 map.centerAndZoom(new BMap.Point(104.070798,30.663543), 12);  // 初始化地图,设置中心点坐标和地图级别
 map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
-map.setCurrentCity("成都");          // 设置地图显示的城市 此项是必须设置的
+//map.setCurrentCity("成都");          // 设置地图显示的城市 此项是必须设置的
 map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
 
 //增加地图控件
 var opts = {anchor: BMAP_ANCHOR_TOP_LEFT, offset: new BMap.Size(10, 10)}
 map.addControl(new BMap.NavigationControl(opts));
 
+function searchC(){
+    searchCity = document.getElementById("Cw").value;
+    map.centerAndZoom(searchCity,12);
+    document.getElementById("pointName").innerHTML = searchCity+"&nbsp.&nbsp"+"<small>" + "&nbsp(实时空气指数AQI)"+"</small>";
+    document.getElementById("pointName").style.color = "#FFFFFF";
+    getWeather(searchCity);
+    getPmValue(searchCity);
+}
 //鼠标点击触发事件
 map.addEventListener("click",deal);
+
+function deal(e){
+    cityLng = e.point.lng;
+    cityLat = e.point.lat;
+    getCityName(cityLng, cityLat);
+    getWeather(cityName);
+    getPmValue(cityName);
+}
 
 //鼠标取点获取城市名字
 function getCityName(cityLng, cityLat) {
@@ -54,11 +73,17 @@ function getWeather(cityName){
         //ajax请求
         req = new XMLHttpRequest();
         req.overrideMimeType("text/xml");
+        if(typeof cityName == "string"){
+            actulName = cityName;
+        }
+        else{
+            actulName = reName(cityName[0]);
+        }
         //将城市名字做url编码
         var encodeName = encodeURIComponent(reName(cityName[0]));
         //req.open("GET", "http://api.openweathermap.org/data/2.5/weather?q=" + cityName[1] + ",cn", true);
         //req.open("GET", "http://wthrcdn.etouch.cn/weather_mini?city=" + encodeName, true);
-        req.open("GET", "http://wthrcdn.etouch.cn/WeatherApi?city=" + reName(cityName[0]), true);
+        req.open("GET", "http://wthrcdn.etouch.cn/WeatherApi?city=" + actulName, true);
         req.onreadystatechange = weatherAjaxResponse;
         req.send(null);
     }
@@ -78,32 +103,16 @@ function weatherAjaxResponse(){
     uP.innerHTML ="<h4>"+"更新时间："+textXml.getElementsByTagName("updatetime")[0].childNodes[0].nodeValue+"</h4>";
     dt.innerHTML = "<h4>"+textXml.getElementsByTagName("detail")[9].childNodes[0].nodeValue+"</h4>";
 }
-/*
-//从api处获取PM2.5值
-function getPmValue(cityName){
-    if(cityName != null){
-        var newName = reName(cityName[0]);
-        pmReg = new XMLHttpRequest();
-        //pmReg.overrideMimeType("text/xml");
-        pmReg.open("GET", "http://www.pm25.in/api/querys/pm10.json?city=" + newName + "&token=5j1znBVAsnSf5xQyNQyq&callback=pmAjaxResponse", true);
-        //pmReg.open("GET","http://weathermap-json.stor.sinaapp.com/" + newName + ".txt", true);
-        //pmReg.open("GET", "http://api.map.baidu.com/telematics/v3/weather?location=" + reName(cityName[0]) + "&output=xml&ak=D78f228016d8c538e0eee2c3d735529d", true);
-       // pmReg.onreadystatechange = pmAjaxResponse;
-        pmReg.send(null);
-    }
-}
-function pmAjaxResponse(){
-    var pmText = pmReg.responseText;
-    var pmJson = JSON.parse(pmText)
-    pM = document.getElementById("pm");
-    pM.innerHTML = pmJson[0].aqi;
-}
-*/
 
 //JSONP获取pm数据
 function getPmValue(cityName){
     if(cityName != null){
-        var newName = reName(cityName[0]);
+        if(typeof cityName == "string"){
+            newName = cityName;
+        }
+        else{
+            newName = reName(cityName[0]);
+        }
         var url = ( "http://www.pm25.in/api/querys/pm10.json?city=" + newName + "&token=5j1znBVAsnSf5xQyNQyq&callback=pmAjaxResponse");
         var script = document.createElement('script');
         script.setAttribute('src', url);
@@ -131,11 +140,6 @@ function pmAjaxResponse(data){
     }
 }
 
-function searchC(){
-    var myGeos = new BMap.Geocoder();
-    var sw = document.getElementById("Cw");
-    var searchCity = sw.value;
-}
 //确定污染颜色等级
 function getQualityBg(pmValue){
     var qualityBglevel;
@@ -184,12 +188,6 @@ function getBgColor(qualityBglevel){
     }
     return Bgcolor;
 }
-function deal(e){
-    cityLng = e.point.lng;
-    cityLat = e.point.lat;
-    getCityName(cityLng, cityLat);
-    getWeather(cityName);
-    getPmValue(cityName);
-}
+
 
 
